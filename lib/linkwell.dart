@@ -73,12 +73,6 @@ class LinkWell extends StatelessWidget {
   /// by default can also be null
   final StrutStyle? strutStyle;
 
-  /// This hold user defined softWrap
-  /// because LinkWell makes user of Flutter RichText Widget
-  /// it also gives user the option to create softwrap
-  /// by default this is set to null
-  final bool softWrap;
-
   /// This hold user defined textScaleFactor
   /// because LinkWell makes user of Flutter RichText Widget
   /// it also gives user the option to create textScaleFactor
@@ -109,7 +103,6 @@ class LinkWell extends StatelessWidget {
     this.linkStyle,
     this.textAlign = TextAlign.start,
     this.textDirection,
-    this.softWrap = true,
     this.overflow = TextOverflow.clip,
     this.textScaleFactor = 1.0,
     this.maxLines,
@@ -119,7 +112,6 @@ class LinkWell extends StatelessWidget {
     this.textWidthBasis = TextWidthBasis.parent,
   })  : assert(text != null),
         assert(textAlign != null),
-        assert(softWrap != null),
         assert(overflow != null),
         assert(textScaleFactor != null),
         assert(maxLines == null || maxLines > 0),
@@ -161,9 +153,7 @@ class LinkWell extends StatelessWidget {
     /// Adds TextSpan to textSpanWidget
     /// checks if style is null and set deafult style
     /// otherwise set style to user defined
-    textSpanWidget.add(TextSpan(
-        text: this.text,
-        style: style == null ? Helper.defaultTextStyle : style));
+    textSpanWidget.add(TextSpan(text: this.text, style: style == null ? Helper.defaultTextStyle : style));
   }
 
   /// _buildBody()
@@ -210,17 +200,15 @@ class LinkWell extends StatelessWidget {
 
         if (this.listOfNames != null) {
           if (this.listOfNames!.containsKey(value)) {
-            name = (this.listOfNames![value] != null ||
-                    this.listOfNames![value] != '')
-                ? this.listOfNames![value]
-                : value;
+            name =
+                (this.listOfNames![value] != null || this.listOfNames![value] != '') ? this.listOfNames![value] : value;
           }
         }
 
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = () => launch(url));
+            recognizer: new TapGestureRecognizer()..onTap = () => launchUrl(Uri.parse(url)));
 
         /// added
         textSpanWidget.add(link);
@@ -229,22 +217,22 @@ class LinkWell extends StatelessWidget {
 
         var l = value.toString().contains('https://')
             ? value
-            : value.toString().contains('http://') ? value : 'http://' + value;
+            : value.toString().contains('http://')
+                ? value
+                : 'http://' + value;
         var name = l;
 
         if (this.listOfNames != null) {
           if (this.listOfNames!.containsKey(value)) {
-            name = (this.listOfNames![value] != null ||
-                    this.listOfNames![value] != '')
-                ? this.listOfNames![value]
-                : value;
+            name =
+                (this.listOfNames![value] != null || this.listOfNames![value] != '') ? this.listOfNames![value] : value;
           }
         }
 
         var link = TextSpan(
             text: name,
             style: linkStyle == null ? Helper.linkDefaultTextStyle : linkStyle,
-            recognizer: new TapGestureRecognizer()..onTap = () => launch(l));
+            recognizer: new TapGestureRecognizer()..onTap = () => launchUrl(Uri.parse(l)));
 
         /// added
         textSpanWidget.add(link);
@@ -268,19 +256,14 @@ class LinkWell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: RichText(
-        textAlign: textAlign,
-        locale: locale,
-        maxLines: maxLines,
-        overflow: overflow,
-        strutStyle: strutStyle,
-        softWrap: softWrap,
-        textScaleFactor: textScaleFactor,
-        textWidthBasis: textWidthBasis,
-        textDirection: textDirection,
-        text: TextSpan(children: textSpanWidget),
-      ),
+    return SelectableText.rich(
+      TextSpan(children: textSpanWidget, style: TextStyle(overflow: overflow, locale: locale)),
+      textAlign: textAlign,
+      maxLines: maxLines,
+      strutStyle: strutStyle,
+      textScaleFactor: textScaleFactor,
+      textWidthBasis: textWidthBasis,
+      textDirection: textDirection,
     );
   }
 }
